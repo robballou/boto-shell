@@ -36,7 +36,9 @@ Will enter the route53 subshell and run the `zones` command. Or:
 
 # License
 
-Boto Library Copyright (c) 2006-2011 Mitch Garnaat mitch@garnaat.com Copyright (c) 2010-2011, Eucalyptus Systems, Inc. All rights reserved.
+Boto Library 
+Copyright (c) 2006-2011 Mitch Garnaat mitch@garnaat.com Copyright (c) 2010-2011, Eucalyptus Systems, Inc. All rights reserved.
+https://github.com/boto/boto
 
 Boto Shell Copyright (c) 2011 Rob Ballou
 
