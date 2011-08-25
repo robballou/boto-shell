@@ -1,6 +1,38 @@
 # A simple AWS shell
 
-This is a simple shell for AWS using the great boto library.
+This is a simple shell for AWS using the great boto library. 
+
+## Authentication
+
+Just like boto itself, you can use the environment variables `AMAZON\_ACCESS\_KEY\_ID` and `AMAZON\_SECRET\_KEY` to set your account authentication. Or you can set/change the keys in boto-shell:
+
+    boto > access_key [key]
+    boto > secret_key [key]
+
+## Subshells
+
+To act on things like EC2 or Route53, you can either enter the "subshell" or enter the command directly. For instance:
+
+    boto > route53 zones
+
+Will enter the route53 subshell and run the `zones` command. Or:
+
+    boto > route53
+    route53 > 
+
+## List Route53 zones
+
+    boto > route53
+    route53 > zones
+    ...
+
+## List records in a Route53 zone
+
+    boto > route53 zones
+    ...
+    route53 > zone [id]
+    route53 > list
+    ...
 
 # License
 
