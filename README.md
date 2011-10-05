@@ -34,6 +34,18 @@ Will enter the route53 subshell and run the `zones` command. Or:
     route53 > list
     ...
 
+## Add records in a Route53 zone
+
+To add an A record for example.org and an IP of 127.0.0.1 (defaults to a TTL values of 7200 as well):
+
+    boto > route53 zones
+    ...
+    route53 > zone [id]
+    route53 > add example.org 127.0.0.1
+    ...
+
+You can specify the other parts of the record as well. Currently multi-value records are not supported, but it would be very easy to add in the future.
+
 # License
 
 Boto Library 
