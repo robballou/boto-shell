@@ -66,6 +66,7 @@ class BotoShell(cmd.Cmd):
             return cmd.Cmd.default(self, line)
     
     def do_access_key(self, access_key):
+        """Set the authentication access key id"""
         self.amazon_access_key_id = access_key
     
     def do_auth(self, line):
@@ -76,6 +77,9 @@ class BotoShell(cmd.Cmd):
         self.prompt = "ec2 > "
     
     def do_ec2_instances(self, line):
+        """
+        List all EC2 instances for this account
+        """
         if not self.amazon_access_key_id or not self.amazon_secret_key:
             print "Authentication variables are not set."
             return
@@ -89,6 +93,7 @@ class BotoShell(cmd.Cmd):
                 print BotoShell.line
     
     def do_ec2_snapshots(self, line):
+        """List all snapshots for this account"""
         if not self.amazon_access_key_id or not self.amazon_secret_key:
             print "Authentication variables are not set."
             return
@@ -106,6 +111,7 @@ class BotoShell(cmd.Cmd):
         return True
     
     def do_secret_key(self, secret_key):
+        """Set the authentication secret key"""
         self.amazon_secret_key = secret_key
     
     def print_instance(self, instance):

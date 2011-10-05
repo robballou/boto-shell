@@ -1,9 +1,78 @@
 from boto.route53.connection import Route53Connection
+from boto.route53.record import ResourceRecordSets, Record
 
 class Route53Shell(object):
     def __init__(self, parent):
         self.shell = parent
         self.zone = None
+    
+    def do_add(self, line):
+        parts = line.split(' ')
+        count = len(parts)
+        if count == 0 and not self.zone:
+            print "Zone not selected. Either pass a zone ID or set it with the zone command"
+            return
+        
+        options = dict(
+            record_type = 'A',
+            record_ttl = 7200
+        )
+        
+        # command can be:
+        #   zone name value
+        #   zone name type value
+        #   zone name type ttl value
+        #   name value
+        #   name type value
+        #   name type ttl value
+        record_name = None
+        record_type = options['record_type']
+        record_ttl = options['record_ttl']
+        
+        if count == 2 and self.zone:
+            # name value
+            record_name = parts[0]
+            record_value = parts[1]
+        elif count == 3 and not self.zone:
+            # zone name value
+            self.zone = parts[0]
+            record_name = parts[1]
+            record_value = parts[2]
+        elif count == 3 and self.zone:
+            # name type value
+            record_name = parts[0]
+            record_type = parts[1]
+            record_value = parts[2]
+        elif count == 4 and self.zone:
+            # name type ttl value
+            record_name = parts[0]
+            record_type = parts[1]
+            record_ttl = parts[2]
+            record_value = parts[3]
+        elif count == 4 and not self.zone:
+            # zone name type value
+            self.zone = parts[0]
+            record_name = parts[1]
+            record_type = parts[2]
+            record_value = parts[3]
+        elif count == 5 and not self.zone:
+            # zone name type value
+            self.zone = parts[0]
+            record_name = parts[1]
+            record_type = parts[2]
+            record_ttl = parts[3]
+            record_value = parts[4]
+        
+        print "Create:\n\tName:\t%(name)s\n\tType:\t%(type)s\n\tTTL:\t%(ttl)d\n\tValue:\t%(value)s" % dict(
+            name=record_name, type=record_type, ttl=record_ttl, value=record_value)
+        
+        conn = Route53Connection(self.shell.amazon_access_key_id, self.shell.amazon_secret_key)
+        r = ResourceRecordSets(conn, self.zone)
+        r.add_change('CREATE', record_name, record_type, record_ttl)
+        if record_value:
+            r.changes[0][1].add_value(record_value)
+        change = conn.change_rrsets(self.zone, r.to_xml())
+        print change
     
     def do_list(self, line):
         """
