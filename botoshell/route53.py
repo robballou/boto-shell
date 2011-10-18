@@ -1,3 +1,5 @@
+import re
+
 from boto.route53.connection import Route53Connection
 from boto.route53.record import ResourceRecordSets, Record
 
@@ -7,6 +9,9 @@ class Route53Shell(object):
         self.zone = None
     
     def do_add(self, line):
+        """
+        Add a new record
+        """
         parts = line.split(' ')
         count = len(parts)
         if count == 0 and not self.zone:
@@ -86,10 +91,13 @@ class Route53Shell(object):
         if len(parts) == 0 and not self.zone:
             print "Zone not selected. Either pass a zone ID or set it with the zone command"
             return
-        
+
         zone = self.zone
-        if len(parts) == 1 and parts[0] != "":
+        if len(parts) == 1 and parts[0].strip() != "":
             zone = parts[0]
+        elif not zone:
+            print "Zone not selected. Either pass a zone ID or set it with the zone command"
+            return
         
         print self.shell.line
         print "Zones for %s" % zone
@@ -118,6 +126,18 @@ class Route53Shell(object):
             print self.zone
             return
         
+        if re.match(r'^\d+$', line):
+            # the line is numeric, so they are likely selecting a zone from the list of zones
+            conn = Route53Connection(self.shell.amazon_access_key_id, self.shell.amazon_secret_key)
+            zones = conn.get_all_hosted_zones()
+            selected_zone = int(line)
+            if len(zones['ListHostedZonesResponse']['HostedZones']) >= selected_zone:
+                zone = selected_zone - 1
+                line = zones['ListHostedZonesResponse']['HostedZones'][zone]['Id'].replace("/hostedzone/", "")
+            else:
+                print "Invalid zone"
+                return
+        
         self.zone = line
     
     def do_zones(self, line):
@@ -131,8 +151,11 @@ class Route53Shell(object):
         conn = Route53Connection(self.shell.amazon_access_key_id, self.shell.amazon_secret_key)
         zones = conn.get_all_hosted_zones()
         print self.shell.line
+        count = 1
         for zone in zones['ListHostedZonesResponse']['HostedZones']:
             zone['Id'] = zone['Id'].replace('/hostedzone/', '')
+            zone['Count'] = count
             print self.shell.zone_output % zone
             print self.shell.line
+            count += 1
     

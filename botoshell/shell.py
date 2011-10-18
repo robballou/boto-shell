@@ -12,7 +12,7 @@ from route53 import Route53Shell
 class BotoShell(cmd.Cmd):
     line = "==========================================="
     instance_output = ""
-    zone_output = "Name:\t%(Name)s\nID:\t%(Id)s"
+    zone_output = "[%(Count)3d] Name:\t%(Name)s\n      ID:\t%(Id)s"
     
     def __init__(self):
         cmd.Cmd.__init__(self)
@@ -22,7 +22,10 @@ class BotoShell(cmd.Cmd):
         self.amazon_secret_key = None
         
         self.subshell = None
-        
+        if len(sys.argv) == 2:
+            if sys.argv[1] == 'route53': 
+                self.subshell = Route53Shell(self)
+                self.prompt = 'route53 > '
         if os.environ.has_key('AMAZON_ACCESS_KEY_ID'):
             self.amazon_access_key_id = os.environ['AMAZON_ACCESS_KEY_ID']
         if os.environ.has_key('AMAZON_SECRET_KEY'):
